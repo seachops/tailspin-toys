@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { eq } from 'drizzle-orm';
 import { createDatabase, type Database } from '../src/lib/db';
@@ -72,8 +72,13 @@ export async function seedDatabase(db: Database, csvPath: string = join(here, 'g
     }
 }
 
+function isDirectExecution(): boolean {
+    const entryPath = process.argv[1];
+    return entryPath !== undefined && import.meta.url === pathToFileURL(entryPath).href;
+}
+
 // Allow running directly: `tsx db/seed.ts`
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isDirectExecution()) {
     const db = createDatabase();
     seedDatabase(db)
         .then(() => {
