@@ -8,6 +8,8 @@ interface Props {
 }
 
 const { game } = Astro.props;
+const rating = game.starRating === null ? null : Math.max(0, Math.min(5, game.starRating));
+const starFillPercent = rating === null ? 0 : (rating / 5) * 100;
 ---
 
 <a
@@ -38,6 +40,25 @@ const { game } = Astro.props;
             )}
 
             <p class="text-slate-400 mb-4 text-sm line-clamp-2" data-testid="game-description">{game.description}</p>
+            {rating === null ? (
+                <p class="text-slate-300 text-sm" data-testid="game-star-rating">No rating yet</p>
+            ) : (
+                <div
+                    class="text-sm"
+                    data-testid="game-star-rating"
+                    aria-label={`${rating} out of 5 stars`}
+                >
+                    <div class="relative inline-block leading-none" aria-hidden="true">
+                        <span class="text-slate-600">★★★★★</span>
+                        <span
+                            class="absolute inset-y-0 left-0 overflow-hidden text-amber-400"
+                            style={`width: ${starFillPercent}%`}
+                        >
+                            ★★★★★
+                        </span>
+                    </div>
+                </div>
+            )}
 
             <div class="mt-4 text-sm text-blue-400 font-medium flex items-center">
                 <span>View details</span>
